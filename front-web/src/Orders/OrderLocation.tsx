@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import AsyncSelect from 'react-select/async';
 import { fetchLocalMapBox } from '../api';
+import { OrderLocationdata } from './types';
 
 const initialPosition = {
     lat:    -30.0495356,
@@ -17,7 +18,11 @@ const initialPosition = {
          }
      }
 
-function OrderLocation() {
+     type Props = {
+       onChangeLocation: (location: OrderLocationdata) => void;
+     }
+
+function OrderLocation({onChangeLocation}: Props) {
 
     const [address, setAddress] = useState<Place>({
         position: initialPosition
@@ -44,11 +49,11 @@ function OrderLocation() {
       const handleChangeSelect = (place: Place) => {
         setAddress(place);
 
-       // onChangeLocation({
-         // latitude: place.position.lat,
-          //longitude: place.position.lng,
-         // address: place.label!
-       // });
+        onChangeLocation({
+          latitude: place.position.lat,
+          longitude: place.position.lng,
+          address: place.label!
+        });
       };
 
       return (
@@ -58,21 +63,25 @@ function OrderLocation() {
                     Selecione onde o pedido deve ser entregue:
                </h3>
                 <div className="filter-container">
-                     <AsyncSelect 
-                        placeholder="Digite um endereço paraentregar o pedido"
+                      <AsyncSelect 
+                        placeholder="Digite um endereço para entregar o pedido"
                         className="filter"
-                        loadOptions={loadOptions}
+                         loadOptions={loadOptions}
                         onChange={value => handleChangeSelect(value as Place)}
                     />
                 </div>
-                <MapContainer center={address.position} zoom={13} scrollWheelZoom={false}>
+                <MapContainer 
+                center={address.position} 
+                zoom={13} 
+                key={address.position.lat}
+                scrollWheelZoom={false}>
                     <TileLayer
                         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     />
                     <Marker position={address.position}>
                         <Popup>
-                            Meu Marcador. <br /> Easily customizable.
+                            {address.label}
                         </Popup>
                     </Marker>
                 </MapContainer>
@@ -80,6 +89,6 @@ function OrderLocation() {
         </div>
     )
 
-}
+}   
 
 export default OrderLocation;  
