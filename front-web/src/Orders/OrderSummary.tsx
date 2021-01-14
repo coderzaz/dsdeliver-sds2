@@ -1,5 +1,3 @@
-import { type } from "os";
-import ProductsList from "./ProductsList";
 
 type Props = {
     amount:     number;
